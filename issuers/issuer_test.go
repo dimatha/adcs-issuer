@@ -1,10 +1,11 @@
 package issuers
 
 import (
-	"io/ioutil"
+	"fmt"
+	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -19,12 +20,13 @@ var (
 
 func TestParsingCaCertShouldReturnX509(t *testing.T) {
 	// arrange
-	pkcs7Pem, err := ioutil.ReadFile("testdata/pkcs7.pem")
+	pkcs7Pem, err := os.ReadFile("testdata/pkcs7.pem")
 	assert.NoError(t, err)
 
-	validX509Certificate, err := ioutil.ReadFile("testdata/x509.pem")
+	validX509Certificate, err := os.ReadFile("testdata/x509.pem")
 	assert.NoError(t, err)
 	// act
+
 	parsedCaCert, err := parseCaCert(pkcs7Pem, log)
 
 	// assert
@@ -34,10 +36,11 @@ func TestParsingCaCertShouldReturnX509(t *testing.T) {
 
 func TestIncorrectFormatPkcs(t *testing.T) {
 	//arrange
-	incorrectPKCS7Cert, err := ioutil.ReadFile("testdata/incorrectPKCS7Cert.pem")
+	incorrectPKCS7Cert, err := os.ReadFile("testdata/incorrectPKCS7Cert.pem")
 	assert.NoError(t, err)
 
 	// act
+
 	ca, err := parseCaCert(incorrectPKCS7Cert, log)
 
 	// assert
@@ -50,6 +53,7 @@ func TestEmptyPkcs(t *testing.T) {
 	emptyPKCS7 := []byte(``)
 
 	// act
+
 	ca, err := parseCaCert(emptyPKCS7, log)
 
 	// assert
@@ -62,6 +66,7 @@ func TestIncorrectCertFormat(t *testing.T) {
 	incorrectCertFormat := []byte(`This is not correct!`)
 
 	// act
+
 	ca, err := parseCaCert(incorrectCertFormat, log)
 
 	// assert
@@ -73,12 +78,13 @@ func TestIncorrectCertFormat(t *testing.T) {
 func TestParseCaCertCorrectPKCS7(t *testing.T) {
 	// arrange
 	// raw format pkcs7.p7b from cfss testdata (https://github.com/cloudflare/cfssl/tree/master/helpers/testdata)
-	rawPkcs7, err := ioutil.ReadFile("testdata/cfss_rawPKCS7.p7b")
+	rawPkcs7, err := os.ReadFile("testdata/cfss_rawPKCS7.p7b")
 	assert.NoError(t, err)
-	cfssOutputX509, err := ioutil.ReadFile("testdata/cfss_outputx509.pem")
+	cfssOutputX509, err := os.ReadFile("testdata/cfss_outputx509.pem")
 	assert.NoError(t, err)
 
 	// act
+
 	ca, err := parseCaCert(rawPkcs7, log)
 
 	// assert
@@ -89,9 +95,13 @@ func TestParseCaCertCorrectPKCS7(t *testing.T) {
 func TestCorrectX509Cert(t *testing.T) {
 	// arrange
 	// raw format pkcs7.p7b from cfss testdata (https://github.com/cloudflare/cfssl/tree/master/helpers/testdata)
-	x509, err := ioutil.ReadFile("testdata/x509.pem")
+	x509, err := os.ReadFile("testdata/x509.pem")
 
+	if err != nil {
+		fmt.Println("TestCorrectX509Cert")
+	}
 	// act
+
 	parsedCaCert, err := parseCaCert(x509, log)
 
 	// assert

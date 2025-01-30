@@ -11,7 +11,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	cmmeta "github.com/jetstack/cert-manager/pkg/apis/meta/v1"
+	cmmeta "github.com/cert-manager/cert-manager/pkg/apis/meta/v1"
 
 	"github.com/nokia/adcs-issuer/adcs"
 	api "github.com/nokia/adcs-issuer/api/v1"
@@ -64,7 +64,7 @@ func (f *IssuerFactory) getAdcsIssuer(ctx context.Context, key client.ObjectKey)
 
 	caCertPool := x509.NewCertPool()
 	ok := caCertPool.AppendCertsFromPEM(certs)
-	if ok == false {
+	if !ok {
 		return nil, fmt.Errorf("error loading ADCS CA bundle")
 	}
 
@@ -117,7 +117,7 @@ func (f *IssuerFactory) getClusterAdcsIssuer(ctx context.Context, key client.Obj
 
 	caCertPool := x509.NewCertPool()
 	ok := caCertPool.AppendCertsFromPEM(certs)
-	if ok == false {
+	if !ok {
 		return nil, fmt.Errorf("error loading ADCS CA bundle")
 	}
 
@@ -174,6 +174,8 @@ func (f *IssuerFactory) getUserPassword(ctx context.Context, secretName string, 
 	}
 	if _, ok := secret.Data["password"]; !ok {
 		return "", "", fmt.Errorf("Password not set in secret")
+
 	}
+
 	return string(secret.Data["username"]), string(secret.Data["password"]), nil
 }

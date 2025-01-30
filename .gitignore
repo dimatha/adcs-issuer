@@ -6,7 +6,6 @@
 *.so
 *.dylib
 bin
-
 # Test binary, build with `go test -c`
 *.test
 
@@ -29,3 +28,12 @@ bin
 examples/*
 issuers/testdata/pkcs7.pem
 issuers/testdata/x509.pem
+
+minikube_downloads/
+*.logs
+*.tar.gz
+adcs-sim
+*.crt
+*.key
+*-all.yaml
+*.exe
